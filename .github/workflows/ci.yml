@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install Python deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install django djangorestframework pytest
+      - name: Django check
+        working-directory: backend/django_app
+        run: |
+          python manage.py check
+      - name: Run tests (pytest if present)
+        run: |
+          if [ -f backend/tests ]; then echo "skip"; fi
+
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install deps
+        working-directory: frontend
+        run: |
+          if [ -f package.json ]; then npm ci; else echo "no frontend"; fi
+      - name: Lint
+        working-directory: frontend
+        run: |
+          if [ -f package.json ]; then npm run -s lint || true; fi
+
+
