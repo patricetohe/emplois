@@ -8,7 +8,7 @@ import sys
 from django.conf import settings
 
 # Ajouter le chemin des services IA
-ia_services_path = os.path.join(settings.BASE_DIR.parent, 'ia-services', 'matching-engine', 'src')
+ia_services_path = os.path.join(settings.BASE_DIR.parent.parent, 'ia-services', 'matching-engine', 'src')
 if ia_services_path not in sys.path:
     sys.path.append(ia_services_path)
 
@@ -30,8 +30,8 @@ def test_matching():
         print("🚀 Initialisation du service de matching...")
         
         # Chemins des index
-        candidates_index = os.path.join(settings.BASE_DIR.parent, 'search', 'faiss', 'candidates.index')
-        jobs_index = os.path.join(settings.BASE_DIR.parent, 'search', 'faiss', 'job_offers.index')
+        candidates_index = os.path.join(settings.BASE_DIR.parent.parent, 'search', 'faiss', 'candidates.index')
+        jobs_index = os.path.join(settings.BASE_DIR.parent.parent, 'search', 'faiss', 'job_offers.index')
         
         # Créer les dossiers
         os.makedirs(os.path.dirname(candidates_index), exist_ok=True)

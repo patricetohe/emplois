@@ -23,6 +23,7 @@ from django.conf.urls.static import static
 
 from api.views import SkillViewSet, CandidateViewSet, JobOfferViewSet, ApplicationViewSet, ResumeDocumentViewSet
 from api.matching_views import MatchingViewSet
+from api.agent_views import AgentViewSet
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -35,6 +36,7 @@ router.register(r'job-offers', JobOfferViewSet)
 router.register(r'applications', ApplicationViewSet)
 router.register(r'resumes', ResumeDocumentViewSet)
 router.register(r'matching', MatchingViewSet, basename='matching')
+router.register(r'agent', AgentViewSet, basename='agent')
 
 urlpatterns += [
     path('api/', include(router.urls)),

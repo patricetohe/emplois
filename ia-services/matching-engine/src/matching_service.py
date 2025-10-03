@@ -6,8 +6,11 @@ import logging
 from typing import List, Dict, Any, Tuple, Optional
 import numpy as np
 
-from .embeddings_service import EmbeddingProvider, TextProcessor
-from .faiss_store import FAISSVectorStore
+# from .embeddings_service import EmbeddingProvider, TextProcessor
+# from .faiss_store import FAISSVectorStore
+from embeddings_service import EmbeddingProvider, TextProcessor
+from faiss_store import FAISSVectorStore
+
 
 logger = logging.getLogger(__name__)
 
