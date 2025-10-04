@@ -49,6 +49,7 @@ class AgentViewSet(viewsets.ViewSet):
             logger.info("LLMAgentService initialisé côté Django")
         except Exception as e:
             logger.error(f"Erreur initialisation LLMAgentService: {e}")
+            # Ne pas faire échouer l'initialisation, juste désactiver le service
             self.agent_service = None
 
     @action(detail=False, methods=['post'], url_path='ask')

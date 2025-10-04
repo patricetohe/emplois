@@ -52,6 +52,7 @@ class MatchingViewSet(viewsets.ViewSet):
             
         except Exception as e:
             logger.error(f"Erreur lors de l'initialisation du service de matching: {e}")
+            # Ne pas faire échouer l'initialisation, juste désactiver le service
             self.matching_service = None
     
     @action(detail=False, methods=['post'], url_path='index-candidate')

@@ -139,7 +139,15 @@ class ScoringService:
     def _init_default_model(self):
         """Initialise un modèle par défaut."""
         self.model = ScoringModel()
-        self.model.to(self.device)
+        # Éviter l'erreur meta tensor en utilisant to_empty si nécessaire
+        try:
+            self.model.to(self.device)
+        except RuntimeError as e:
+            if "meta tensor" in str(e):
+                # Utiliser to_empty pour les modèles meta
+                self.model = self.model.to_empty(device=self.device)
+            else:
+                raise
         self.model.eval()
         logger.info("Modèle de scoring par défaut initialisé")
     
@@ -156,7 +164,15 @@ class ScoringService:
             # Charger le modèle
             self.model = ScoringModel()
             self.model.load_state_dict(checkpoint['model_state_dict'])
-            self.model.to(self.device)
+            # Éviter l'erreur meta tensor en utilisant to_empty si nécessaire
+            try:
+                self.model.to(self.device)
+            except RuntimeError as e:
+                if "meta tensor" in str(e):
+                    # Utiliser to_empty pour les modèles meta
+                    self.model = self.model.to_empty(device=self.device)
+                else:
+                    raise
             self.model.eval()
             
             # Charger les mappings et statistiques

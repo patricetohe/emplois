@@ -28,7 +28,19 @@ class EmbeddingProvider:
         """Charge le modèle sentence-transformers."""
         try:
             from sentence_transformers import SentenceTransformer
-            self.model = SentenceTransformer(self.model_name)
+            import torch
+            
+            # Charger le modèle avec des paramètres pour éviter l'erreur meta tensor
+            self.model = SentenceTransformer(
+                self.model_name,
+                device='cpu',  # Forcer le chargement sur CPU d'abord
+                trust_remote_code=False
+            )
+            
+            # S'assurer que le modèle est complètement chargé
+            if hasattr(self.model, 'to'):
+                self.model.to('cpu')
+            
             logger.info(f"Modèle d'embeddings chargé: {self.model_name}")
         except ImportError:
             logger.error("sentence-transformers non installé. Installez avec: pip install sentence-transformers")

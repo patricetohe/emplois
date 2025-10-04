@@ -22,7 +22,6 @@ def stats_api(request):
         # Importer le service de matching
         from .matching_views import MatchingViewSet
         matching_view = MatchingViewSet()
-        matching_view._init_matching_service()
         
         if not matching_view.matching_service:
             return JsonResponse({"error": "Service de matching non disponible"}, status=503)
@@ -31,5 +30,8 @@ def stats_api(request):
         return JsonResponse(stats)
         
     except Exception as e:
-        return JsonResponse({"error": str(e)}, status=500)
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f"Erreur récupération stats: {e}")
+        return JsonResponse({"error": "Service de matching non disponible"}, status=503)
 
