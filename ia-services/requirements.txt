@@ -17,3 +17,4 @@ python-docx>=0.8.11
 # Utilitaires
 scikit-learn>=1.1.0
 pandas>=1.4.0
+requests>=2.28.0

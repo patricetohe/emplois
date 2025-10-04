@@ -24,9 +24,12 @@ from django.conf.urls.static import static
 from api.views import SkillViewSet, CandidateViewSet, JobOfferViewSet, ApplicationViewSet, ResumeDocumentViewSet
 from api.matching_views import MatchingViewSet
 from api.agent_views import AgentViewSet
+from api.web_views import agent_test_view, stats_api
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', agent_test_view, name='agent_test'),
+    path('api/stats/', stats_api, name='stats_api'),
 ]
 
 router = DefaultRouter()
