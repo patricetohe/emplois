@@ -150,7 +150,7 @@ class LLMAgentService:
                 except Exception as e:
                     logger.warning(f"Recherche ES échouée: {e}")
 
-            # 4) Fusion simple: priorité à l'intersection, puis union pondérée
+            # 4) Fusion avec normalisation des scores
             # Normaliser FAISS -> dict id->score
             faiss_map = {doc_id: score for doc_id, score in faiss_results}
             es_map = {}
@@ -160,12 +160,40 @@ class LLMAgentService:
                 if doc_id and doc_id != "None":
                     es_map[doc_id] = float(h.get("_score", 1.0))
 
-            # Fusion: score = 0.6*faiss + 0.4*es (si présent), sinon score existant
+            # Normaliser les scores pour la fusion
+            def normalize_scores(score_dict, method="minmax"):
+                """Normalise les scores entre 0 et 1."""
+                if not score_dict:
+                    return {}
+                
+                scores = list(score_dict.values())
+                if not scores:
+                    return {}
+                
+                if method == "minmax":
+                    min_score = min(scores)
+                    max_score = max(scores)
+                    if max_score == min_score:
+                        return {k: 0.5 for k in score_dict.keys()}
+                    return {k: (v - min_score) / (max_score - min_score) for k, v in score_dict.items()}
+                elif method == "softmax":
+                    import math
+                    exp_scores = [math.exp(s) for s in scores]
+                    sum_exp = sum(exp_scores)
+                    return {k: exp_scores[i] / sum_exp for i, k in enumerate(score_dict.keys())}
+                else:
+                    return score_dict
+
+            # Normaliser les scores FAISS et ES
+            faiss_normalized = normalize_scores(faiss_map)
+            es_normalized = normalize_scores(es_map)
+
+            # Fusion: score = 0.6*faiss_normalized + 0.4*es_normalized
             fused_ids = set(faiss_map.keys()) | set(es_map.keys())
             fused = []
             for did in fused_ids:
-                fa = faiss_map.get(did)
-                es = es_map.get(did)
+                fa = faiss_normalized.get(did)
+                es = es_normalized.get(did)
                 if fa is not None and es is not None:
                     s = 0.6 * float(fa) + 0.4 * float(es)
                 elif fa is not None:
